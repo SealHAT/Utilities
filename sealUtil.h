@@ -48,7 +48,7 @@ typedef enum {
  * @param SDA [IN] pin for the I2C devices data line
  * @param SCL [IN] pin for the I2C devices clock line
  */
-void I2C_UNBLOCK_BUS(const uint8_t SDA, const uint8_t SCL);
+void i2c_unblock_bus(const uint8_t SDA, const uint8_t SCL);
 
 #ifdef __cplusplus
 }

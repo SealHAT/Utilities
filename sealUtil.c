@@ -3,7 +3,7 @@
 #include <utils.h>
 #include <hal_init.h>
 
-void I2C_UNBLOCK_BUS(const uint8_t SDA, const uint8_t SCL)
+void i2c_unblock_bus(const uint8_t SDA, const uint8_t SCL)
 {
     uint32_t i, count;
 
