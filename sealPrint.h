@@ -16,6 +16,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <math.h>
+#include "sealUSB.h"
 
 #ifdef __cplusplus
 extern "C" {

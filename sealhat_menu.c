@@ -64,7 +64,7 @@ const MENU_t* menu_navigate(const MENU_t* mnu, const uint32_t selection)
         }
     }
     else {
-		snprintf(errorMsg, ERR_LENGTH, "Error: %d is not a valid option.\n\n", selection);
+		snprintf(errorMsg, ERR_LENGTH, "Error: %lud is not a valid option.\n\n", selection);
 		menu_print(errorMsg, strlen(errorMsg));
     }
 
