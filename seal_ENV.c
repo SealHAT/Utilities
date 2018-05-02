@@ -7,6 +7,8 @@
 
 #include "seal_ENV.h"
 
+#define TEMP_READ_TIME      (pdMS_TO_TICKS(8)) // time to block between reading start and get in ms
+
 TaskHandle_t      xENV_th;      // environmental sensors task (light and temp)
 
 int32_t ENV_task_init(uint32_t period)
@@ -18,7 +20,9 @@ void ENV_task(void* pvParameters)
 {
     //    UBaseType_t uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
     int32_t     err = 0;        // for catching API errors
+    TickType_t  xPeriod;        // the sampling period of the sensors
     ENV_MSG_t   msg;            // reads the data
+    TickType_t  xLastWakeTime;  // last wake time variable for timing
     (void)pvParameters;
 
     // initialize the temperature sensor
@@ -34,9 +38,20 @@ void ENV_task(void* pvParameters)
     msg.header.size      = 4;   // four bytes of data in an env packet
     msg.header.timestamp = 0;   // use timestamp as an index for now.
 
+    // Initialize the xLastWakeTime variable with the current time.
+    xPeriod       = pdMS_TO_TICKS(1000);
+    xLastWakeTime = xTaskGetTickCount();
+
     for(;;) {
+
+        // initialize the start time, or re-init if the task was suspended
+        if((xLastWakeTime + xPeriod) < xTaskGetTickCount()) {
+            xLastWakeTime = xTaskGetTickCount();
+        }
+        vTaskDelayUntil(&xLastWakeTime, xPeriod);
+
         // reset the message header
-        msg.header.id           = DEV_ENV;
+        msg.header.id = DEV_ENV;
         msg.header.timestamp++;
 
         // start an asynchronous temperature reading
@@ -52,7 +67,7 @@ void ENV_task(void* pvParameters)
         //        uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
 
         // wait for the temperature sensor to finish
-        os_sleep(pdMS_TO_TICKS(5));
+        os_sleep(TEMP_READ_TIME);
 
         // get temp
         portENTER_CRITICAL();
@@ -63,8 +78,5 @@ void ENV_task(void* pvParameters)
         }
 
         byteQ_write((uint8_t*)&msg, sizeof(ENV_MSG_t));
-
-        // sleep till the next sample
-        os_sleep(pdMS_TO_TICKS(975));
     }
-}
+} 

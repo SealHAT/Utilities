@@ -62,5 +62,5 @@ int32_t byteQ_write(uint8_t* buff, const uint32_t LEN);
 int32_t MSG_task_init(uint32_t qLength);
 
 void MSG_task(void* pvParameters);
-
-#endif /* SEAL_MSG_H_ */
+ 
+#endif /* SEAL_MSG_H_ */ 
