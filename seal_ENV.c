@@ -9,6 +9,11 @@
 
 TaskHandle_t      xENV_th;      // environmental sensors task (light and temp)
 
+int32_t ENV_task_init(uint32_t period)
+{
+    return ( xTaskCreate(ENV_task, "ENV", ENV_STACK_SIZE, NULL, ENV_TASK_PRI, &xENV_th) == pdPASS ? ERR_NONE : ERR_NO_MEMORY);
+}
+
 void ENV_task(void* pvParameters)
 {
     //    UBaseType_t uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );

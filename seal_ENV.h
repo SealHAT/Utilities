@@ -23,6 +23,8 @@ typedef struct __attribute__((__packed__)){
 
 extern TaskHandle_t xENV_th;        // environmental sensors task (light and temp)
 
+int32_t ENV_task_init(uint32_t period);
+
 void ENV_task(void* pvParameters);
 
 #endif /* SEAL_ENV_H_ */

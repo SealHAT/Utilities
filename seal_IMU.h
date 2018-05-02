@@ -27,6 +27,8 @@ void MagnetometerDataReadyISR(void);
 
 void AccelerometerMotionISR(void);
 
+int32_t IMU_task_init(uint32_t settings);
+
 void IMU_task(void* pvParameters);
 
 #endif /* SEAL_IMU_H_ */

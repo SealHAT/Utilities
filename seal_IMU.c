@@ -11,7 +11,7 @@
 #define MAG_DATA_READY      (0x02)
 #define MOTION_DETECT       (0x04)
 
-TaskHandle_t xIMU_th;           // IMU
+TaskHandle_t       xIMU_th;     // IMU task handle
 
 void AccelerometerDataReadyISR(void)
 {
@@ -54,6 +54,11 @@ void AccelerometerMotionISR(void)
     should be performed to ensure the interrupt returns directly to the highest
     priority task.*/
     portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+}
+
+int32_t IMU_task_init(uint32_t settings)
+{
+    return ( xTaskCreate(IMU_task, "IMU", IMU_STACK_SIZE, NULL, IMU_TASK_PRI, &xIMU_th) == pdPASS ? ERR_NONE : ERR_NO_MEMORY);
 }
 
 void IMU_task(void* pvParameters)

@@ -8,6 +8,7 @@
 #include "task.h"
 #include "semphr.h"
 #include "limits.h"
+#include "event_groups.h"
 
 #include "hal_io.h"
 #include "hal_rtos.h"

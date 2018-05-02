@@ -5,7 +5,7 @@
 #define SEALHAT_MENU_H_
 
 #include "atmel_start.h"
-#include "sealUSB.h"
+#include "seal_USB.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
