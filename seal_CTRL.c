@@ -10,7 +10,7 @@
 TaskHandle_t       xCTRL_th;     // Message accumulator for USB/MEM
 EventGroupHandle_t xCTRL_eg;     // IMU event group
 SemaphoreHandle_t  USB_mutex;    // mutex to control access to USB terminal
-QueueHandle_t      xDATA_q;       // a message Queue for collecting all logged data
+QueueHandle_t      xDATA_q;      // a message Queue for collecting all logged data
 
 void vbus_detection_cb(void)
 {
@@ -107,6 +107,6 @@ void MSG_task(void* pvParameters)
 
         if(usb_state() == USB_Configured && usb_dtr()) {
             usb_write(endptBuf, BUFF_SIZE);
-        }   
+        }
     }
 }

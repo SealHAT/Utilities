@@ -27,6 +27,7 @@ typedef struct {
 typedef struct {
 	uint8_t buff[USB_BUFFER_SIZE];		// Buffer for USB control transactions
 	volatile USB_State_t devState;		// tracks the USB device state
+    volatile bool cb_reg;               // indicates if callbacks are registered, since this must happen after EP allocation
 	volatile bool dtr;					// Flag to indicate status of DTR - Data Terminal Ready
 	volatile bool rts;					// Flag to indicate status of RTS - Request to Send
 } ctrlData_t;
@@ -85,14 +86,12 @@ static bool usb_in_complete(const uint8_t ep, const enum usb_xfer_code rc, const
  */
 static bool usb_line_state_changed(usb_cdc_control_signal_t newState)
 {
-	static bool callbacks_registered = false;	// prevents callbacks from being registered twice
-
 	ctrlBuf.dtr      = newState.rs232.DTR;
 	ctrlBuf.rts      = newState.rs232.RTS;
     ctrlBuf.devState = (USB_State_t)usbdc_get_state();
 
-	if (cdcdf_acm_is_enabled() && !callbacks_registered) {
-		callbacks_registered = true;
+	if (cdcdf_acm_is_enabled() && !ctrlBuf.cb_reg) {
+		ctrlBuf.cb_reg = true;
 		/* Callbacks must be registered after endpoint allocation */
 		cdcdf_acm_register_callback(CDCDF_ACM_CB_READ, (FUNC_PTR)usb_out_complete);
 		cdcdf_acm_register_callback(CDCDF_ACM_CB_WRITE, (FUNC_PTR)usb_in_complete);
@@ -111,6 +110,7 @@ int32_t usb_start(void)
 	outbuf.head          = 0;
 	outbuf.tail		     = 0;
 	outbuf.outInProgress = false;
+    ctrlBuf.cb_reg       = false;
 	ctrlBuf.dtr          = false;
 	ctrlBuf.rts          = false;
 	ctrlBuf.devState     = (USB_State_t)usbdc_get_state();
@@ -133,18 +133,12 @@ int32_t usb_start(void)
 int32_t usb_stop(void)
 {
 	cdcdf_acm_stop_xfer();
-	usbdc_detach();
-	usbdc_stop();
-
 	cdcdf_acm_deinit();
+    usbdc_detach();
+	usbdc_stop();
 	usbdc_deinit();
 
-    inbuf.waiting        = 0;
-    outbuf.head          = 0;
-    outbuf.tail		     = 0;
-    outbuf.outInProgress = false;
     ctrlBuf.devState     = (USB_State_t)usbdc_get_state();
-
 	return ERR_NONE;
 }
 
