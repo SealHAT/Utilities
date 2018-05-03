@@ -18,9 +18,11 @@ void vbus_detection_cb(void)
     BaseType_t xResult;
 
     if( gpio_get_pin_level(VBUS_DETECT) ) {
+        usb_start();
         xResult = xEventGroupSetBitsFromISR(xCTRL_eg, EVENT_VBUS, &xHigherPriorityTaskWoken);
     }
     else {
+        usb_stop();
         xResult = xEventGroupClearBitsFromISR(xCTRL_eg, EVENT_VBUS);
     }
 
@@ -64,6 +66,13 @@ int32_t MSG_task_init(uint32_t qLength)
         return ERR_NO_MEMORY;
     }
 
+    // initialize (clear all) event group and check current VBUS level
+    xEventGroupClearBits(xCTRL_eg, EVENT_MASK_ALL);
+    if(gpio_get_pin_level(VBUS_DETECT)) {
+        usb_start();
+        xEventGroupSetBits(xCTRL_eg, EVENT_VBUS);
+    }
+
     USB_mutex = xSemaphoreCreateMutex();
     if (USB_mutex == NULL) {
         return ERR_NO_MEMORY;
@@ -96,6 +105,8 @@ void MSG_task(void* pvParameters)
             xQueueReceive(xDATA_q, &endptBuf[i], ~0);
         }
 
-        usb_write(endptBuf, BUFF_SIZE);
+        if(usb_state() == USB_Configured && usb_dtr()) {
+            usb_write(endptBuf, BUFF_SIZE);
+        }   
     }
 }

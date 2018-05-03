@@ -16,7 +16,7 @@ extern "C" {
 #endif // __cplusplus
 
 typedef enum {
-	USB_Detached   = -1,  /* device is unplugged and VBUS is inactive*/
+	USB_Detached   = 0xFF,  /* device is unplugged and VBUS is inactive*/
 	USB_Attached   = 0x00,   /* device is attached to the bus but not powered ( ex. host detected over current, also used to indicate unattached state) */
 	USB_Powered    = 0x01,   /* device is connected to a host, but enumeration has not begun. VBUS is active and device can draw up to 100mA. */
 	USB_Default    = 0x02,   /* device's USB bus has been reset by the host and is waiting for the host to begin the enumeration process */

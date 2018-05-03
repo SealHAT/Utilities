@@ -87,8 +87,9 @@ static bool usb_line_state_changed(usb_cdc_control_signal_t newState)
 {
 	static bool callbacks_registered = false;	// prevents callbacks from being registered twice
 
-	ctrlBuf.dtr = newState.rs232.DTR;
-	ctrlBuf.rts = newState.rs232.RTS;
+	ctrlBuf.dtr      = newState.rs232.DTR;
+	ctrlBuf.rts      = newState.rs232.RTS;
+    ctrlBuf.devState = (USB_State_t)usbdc_get_state();
 
 	if (cdcdf_acm_is_enabled() && !callbacks_registered) {
 		callbacks_registered = true;
@@ -112,7 +113,7 @@ int32_t usb_start(void)
 	outbuf.outInProgress = false;
 	ctrlBuf.dtr          = false;
 	ctrlBuf.rts          = false;
-	ctrlBuf.devState     = USB_Detached;
+	ctrlBuf.devState     = (USB_State_t)usbdc_get_state();
 
 	/* usb stack init */
 	err = usbdc_init(ctrlBuf.buff);
@@ -137,6 +138,12 @@ int32_t usb_stop(void)
 
 	cdcdf_acm_deinit();
 	usbdc_deinit();
+
+    inbuf.waiting        = 0;
+    outbuf.head          = 0;
+    outbuf.tail		     = 0;
+    outbuf.outInProgress = false;
+    ctrlBuf.devState     = (USB_State_t)usbdc_get_state();
 
 	return ERR_NONE;
 }
