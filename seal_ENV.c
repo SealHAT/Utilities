@@ -13,16 +13,16 @@ TaskHandle_t      xENV_th;      // environmental sensors task (light and temp)
 
 int32_t ENV_task_init(uint32_t period)
 {
-    return ( xTaskCreate(ENV_task, "ENV", ENV_STACK_SIZE, NULL, ENV_TASK_PRI, &xENV_th) == pdPASS ? ERR_NONE : ERR_NO_MEMORY);
+    return (xTaskCreate(ENV_task, "ENV", ENV_STACK_SIZE, (void*)period, ENV_TASK_PRI, &xENV_th) == pdPASS ? ERR_NONE : ERR_NO_MEMORY);
 }
 
 void ENV_task(void* pvParameters)
 {
     //    UBaseType_t uxHighWaterMark = uxTaskGetStackHighWaterMark( NULL );
-    int32_t     err = 0;        // for catching API errors
-    TickType_t  xPeriod;        // the sampling period of the sensors
-    ENV_MSG_t   msg;            // reads the data
-    TickType_t  xLastWakeTime;  // last wake time variable for timing
+    int32_t     err     = ERR_NONE;     // for catching API errors
+    TickType_t  xPeriod;                // the period of the sampling in seconds
+    ENV_MSG_t   msg;                    // reads the data
+    TickType_t  xLastWakeTime;          // last wake time variable for timing
     (void)pvParameters;
 
     // initialize the temperature sensor
@@ -39,7 +39,7 @@ void ENV_task(void* pvParameters)
     msg.header.timestamp = 0;   // use timestamp as an index for now.
 
     // Initialize the xLastWakeTime variable with the current time.
-    xPeriod       = pdMS_TO_TICKS(1000);
+    xPeriod       = pdMS_TO_TICKS((uint32_t)pvParameters * 1000);
     xLastWakeTime = xTaskGetTickCount();
 
     for(;;) {

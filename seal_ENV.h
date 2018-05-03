@@ -5,7 +5,7 @@
  *  Author: Ethan
  */
 #include "seal_RTOS.h"
-#include "seal_MSG.h"
+#include "seal_CTRL.h"
 #include "max44009/max44009.h"
 #include "si705x/si705x.h"
 

@@ -17,11 +17,11 @@ extern "C" {
 
 typedef enum {
 	USB_Detached   = -1,  /* device is unplugged and VBUS is inactive*/
-	USB_Attached   = 0,   /* device is attached to the bus but not powered ( ex. host detected over current, also used to indicate unattached state) */
-	USB_Powered    = 1,   /* device is connected to a host, but enumeration has not begun. VBUS is active and device can draw up to 100mA. */
-	USB_Default    = 2,   /* device's USB bus has been reset by the host and is waiting for the host to begin the enumeration process */
-	USB_Addressed  = 3,   /* device has been addressed by the USB Host, but is not configured. */
-	USB_Configured = 4,   /* device has been enumerated by the host and is ready for USB communications to begin */
+	USB_Attached   = 0x00,   /* device is attached to the bus but not powered ( ex. host detected over current, also used to indicate unattached state) */
+	USB_Powered    = 0x01,   /* device is connected to a host, but enumeration has not begun. VBUS is active and device can draw up to 100mA. */
+	USB_Default    = 0x02,   /* device's USB bus has been reset by the host and is waiting for the host to begin the enumeration process */
+	USB_Addressed  = 0x03,   /* device has been addressed by the USB Host, but is not configured. */
+	USB_Configured = 0x04,   /* device has been enumerated by the host and is ready for USB communications to begin */
 	USB_Suspended  = 0x10 /* USB bus has been suspended by the host, and the device should power down to a minimal power level until the bus is resumed. */
 } USB_State_t;
 

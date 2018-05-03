@@ -58,7 +58,7 @@ void AccelerometerMotionISR(void)
 
 int32_t IMU_task_init(uint32_t settings)
 {
-    return ( xTaskCreate(IMU_task, "IMU", IMU_STACK_SIZE, NULL, IMU_TASK_PRI, &xIMU_th) == pdPASS ? ERR_NONE : ERR_NO_MEMORY);
+    return ( xTaskCreate(IMU_task, "IMU", IMU_STACK_SIZE, (void*)settings, IMU_TASK_PRI, &xIMU_th) == pdPASS ? ERR_NONE : ERR_NO_MEMORY);
 }
 
 void IMU_task(void* pvParameters)
