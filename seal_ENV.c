@@ -36,7 +36,6 @@ void ENV_task(void* pvParameters)
     // set the header data
     msg.header.srtSym    = 0xDEAD;
     msg.header.size      = 4;   // four bytes of data in an env packet
-    msg.header.timestamp = 0;   // use timestamp as an index for now.
 
     // Initialize the xLastWakeTime variable with the current time.
     xPeriod       = pdMS_TO_TICKS((uint32_t)pvParameters * 1000);
@@ -51,8 +50,8 @@ void ENV_task(void* pvParameters)
         vTaskDelayUntil(&xLastWakeTime, xPeriod);
 
         // reset the message header
-        msg.header.id = DEV_ENV;
-        msg.header.timestamp++;
+        msg.header.id        = DEV_ENV;
+        msg.header.timestamp = _calendar_get_counter(&CALENDAR_0.device);
 
         // start an asynchronous temperature reading
         portENTER_CRITICAL();

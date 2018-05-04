@@ -60,11 +60,27 @@ int32_t byteQ_write(uint8_t* buff, const uint32_t LEN)
 
 int32_t MSG_task_init(uint32_t qLength)
 {
+    struct calendar_date date;
+    struct calendar_time time;
+
     // create 24-bit system event group
     xCTRL_eg = xEventGroupCreate();
     if(xCTRL_eg == NULL) {
         return ERR_NO_MEMORY;
     }
+
+    calendar_enable(&CALENDAR_0);
+
+    date.year  = 2018;
+    date.month = 5;
+    date.day   = 4;
+
+    time.hour = 15;
+    time.min  = 33;
+    time.sec  = 0;
+
+    calendar_set_date(&CALENDAR_0, &date);
+    calendar_set_time(&CALENDAR_0, &time);
 
     // initialize (clear all) event group and check current VBUS level
     xEventGroupClearBits(xCTRL_eg, EVENT_MASK_ALL);
