@@ -7,9 +7,14 @@
 #include "seal_RTOS.h"
 #include "seal_UTIL.h"
 
-void vApplicationIdleHook( void )
+void vApplicationIdleHook(void)
 {
     sleep(PM_SLEEPCFG_SLEEPMODE_STANDBY_Val);
+}
+
+void vApplicationTickHook(void)
+{
+    gpio_toggle_pin_level(MOD2);
 }
 
 void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName )
