@@ -9,7 +9,7 @@
 
 void vApplicationIdleHook( void )
 {
-    sleep(PM_SLEEPCFG_SLEEPMODE_IDLE_Val);
+    sleep(PM_SLEEPCFG_SLEEPMODE_STANDBY_Val);
 }
 
 void vApplicationStackOverflowHook( TaskHandle_t xTask, signed char *pcTaskName )

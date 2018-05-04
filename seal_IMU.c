@@ -17,11 +17,9 @@ void AccelerometerDataReadyISR(void)
 {
     BaseType_t xHigherPriorityTaskWoken = pdFALSE;  // will be set to true by notify if we are awakening a higher priority task
 
-    gpio_set_pin_level(MOD2, true);
     /* Notify the IMU task that the ACCEL FIFO is ready to read */
     xTaskNotifyFromISR(xIMU_th, ACC_DATA_READY, eSetBits, &xHigherPriorityTaskWoken);
 
-    gpio_set_pin_level(MOD2, false);
     /* If xHigherPriorityTaskWoken is now set to pdTRUE then a context switch
     should be performed to ensure the interrupt returns directly to the highest
     priority task. */
@@ -101,9 +99,7 @@ void IMU_task(void* pvParameters)
 
             if( ACC_DATA_READY & ulNotifyValue ) {
                 portENTER_CRITICAL();
-                gpio_set_pin_level(MOD2, true);
                 err = lsm303_acc_FIFOread(&msg.accelData[0], 25, NULL);
-                gpio_set_pin_level(MOD2, false);
                 portEXIT_CRITICAL();
                 msg.header.timestamp++;
 
