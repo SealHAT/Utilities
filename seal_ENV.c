@@ -51,7 +51,9 @@ void ENV_task(void* pvParameters)
 
         // reset the message header
         msg.header.id        = DEV_ENV;
-        msg.header.timestamp = _calendar_get_counter(&CALENDAR_0.device);
+        msg.header.timestamp = _calendar_get_counter(&RTC_CALENDAR.device);
+        hri_tc_set_CTRLB_CMD_bf(TC4, TC_CTRLBSET_CMD_READSYNC_Val);
+        msg.header.msTime    = hri_tccount16_get_COUNT_reg(TC4, 0xFFFF);
 
         // start an asynchronous temperature reading
         portENTER_CRITICAL();

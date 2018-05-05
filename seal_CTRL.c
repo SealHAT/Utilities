@@ -69,7 +69,7 @@ int32_t MSG_task_init(uint32_t qLength)
         return ERR_NO_MEMORY;
     }
 
-    calendar_enable(&CALENDAR_0);
+    calendar_enable(&RTC_CALENDAR);
 
     date.year  = 2018;
     date.month = 5;
@@ -79,8 +79,8 @@ int32_t MSG_task_init(uint32_t qLength)
     time.min  = 33;
     time.sec  = 0;
 
-    calendar_set_date(&CALENDAR_0, &date);
-    calendar_set_time(&CALENDAR_0, &time);
+    calendar_set_date(&RTC_CALENDAR, &date);
+    calendar_set_time(&RTC_CALENDAR, &time);
 
     // initialize (clear all) event group and check current VBUS level
     xEventGroupClearBits(xCTRL_eg, EVENT_MASK_ALL);
