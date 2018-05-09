@@ -261,3 +261,8 @@ int32_t usb_flushRx(void)
 	outbuf.tail = 0;
 	return ERR_NONE;
 }
+
+bool usb_isInBusy(void) 
+{
+    return (0 != inbuf.waiting);
+}
