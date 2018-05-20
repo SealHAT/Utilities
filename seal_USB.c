@@ -13,28 +13,28 @@ static struct usbd_descriptors single_desc[] = { {single_desc_bytes, single_desc
 
 typedef struct {
 	uint8_t buff[USB_BUFFER_SIZE];		// Buffer for receiving data from host
-	volatile uint32_t head;				// Head index of the buffer
-	volatile uint32_t tail;				// tail index of the buffer
-	volatile bool outInProgress;        // indicates if there is data waiting to be read
-	volatile enum usb_xfer_code lastCode;	// transfer code of the last completed transaction
+	uint32_t head;				// Head index of the buffer
+	uint32_t tail;				// tail index of the buffer
+	bool outInProgress;        // indicates if there is data waiting to be read
+	enum usb_xfer_code lastCode;	// transfer code of the last completed transaction
 } outData_t;
 
 typedef struct {
-	volatile uint32_t waiting;				// number of bytes waiting to be sent
-	volatile enum usb_xfer_code lastCode;	// transfer code of the last completed transaction
+	uint32_t waiting;				// number of bytes waiting to be sent
+	enum usb_xfer_code lastCode;	// transfer code of the last completed transaction
 } inData_t;
 
 typedef struct {
 	uint8_t buff[USB_BUFFER_SIZE];		// Buffer for USB control transactions
-	volatile USB_State_t devState;		// tracks the USB device state
-    volatile bool cb_reg;               // indicates if callbacks are registered, since this must happen after EP allocation
-	volatile bool dtr;					// Flag to indicate status of DTR - Data Terminal Ready
-	volatile bool rts;					// Flag to indicate status of RTS - Request to Send
+	USB_State_t devState;		// tracks the USB device state
+    bool cb_reg;               // indicates if callbacks are registered, since this must happen after EP allocation
+	bool dtr;					// Flag to indicate status of DTR - Data Terminal Ready
+	bool rts;					// Flag to indicate status of RTS - Request to Send
 } ctrlData_t;
 
-static ctrlData_t ctrlBuf;				// CTRL endpoint buffer
-static outData_t  outbuf;				// OUT endpoint buffer
-static inData_t   inbuf;				// IN endpoint buffer
+volatile static ctrlData_t ctrlBuf;				// CTRL endpoint buffer
+volatile static outData_t  outbuf;				// OUT endpoint buffer
+volatile static inData_t   inbuf;				// IN endpoint buffer
 
 /**
  * \brief Callback for USB to simply set a flag that data has been received.
@@ -171,7 +171,7 @@ void usb_haltTraffic(void) {
 /************************ TRANSMITTING DATA *************************************/
 int32_t usb_write(void* outData, uint32_t BUFFER_SIZE)
 {
-	int32_t err;
+	volatile static int32_t err;    // error return
 
 	// This check IS needed. cdcdf_acm_write() will drop data if bus is busy and does
 	// not appear to return an error message.
@@ -183,13 +183,14 @@ int32_t usb_write(void* outData, uint32_t BUFFER_SIZE)
 
 		err = cdcdf_acm_write((uint8_t*)outData, BUFFER_SIZE);
 	}
+    else if(inbuf.waiting) {
+        err = ERR_BUSY;
+    }
+    else if(!ctrlBuf.dtr) {
+        err = ERR_NOT_READY;
+    }
     else {
-        if(inbuf.waiting) {
-            err = ERR_BUSY;
-        }
-        else if(!ctrlBuf.dtr) {
-            err = ERR_NOT_READY;
-        }
+        err = ERR_FAILURE;
     }
 
 	return  err;
