@@ -92,12 +92,13 @@ static inline int32_t usb_put(uint8_t outChar) { return usb_write(&outChar, 1); 
 /**
  * @brief flush the TX buffer and send it's contents to the USB host.
  *
- * This function currently does nothing and will always return ERR_NONE.
- * IN transactions are not buffered, this function is kept in only for compatibility.
+ * This function will halt the current transaction and clear out the byte
+ * count that is used to track outgoing data. This frees up the IN enpoint for
+ * another transaction if it is returning ERR_BUSY.
  *
  * @returns 0 if successful, or negative if error (as listed in err_codes.h)
  */
-static inline int32_t usb_flushTx(void) { return ERR_NONE; }
+void usb_flushTx(void);
 
 /************************ RECEIVING DATA ****************************************/
 /**
@@ -127,7 +128,7 @@ int32_t usb_get(void);
  * @brief flush the RX buffer and send it's contents.
  * @returns 0 if successful, or negative if error (as listed in err_codes.h)
  */
-int32_t usb_flushRx(void);
+void usb_flushRx(void);
 
 #ifdef __cplusplus
 }

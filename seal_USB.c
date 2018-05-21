@@ -36,6 +36,30 @@ static volatile ctrlData_t ctrlBuf;				// CTRL endpoint buffer
 static volatile outData_t  outbuf;				// OUT endpoint buffer
 static volatile inData_t   inbuf;				// IN endpoint buffer
 
+static inline int32_t usb_errConverter(int32_t err) {
+    // convert USB errors to their standard error counterparts.
+    switch(err) {
+        case USB_BUSY           : err = ERR_BUSY;
+        break;
+        case USB_HALTED         : err = ERR_SUSPEND;
+        break;
+        case USB_ERROR          : err = ERR_FAILURE;
+        break;
+        case USB_ERR_DENIED     : err = ERR_DENIED;
+        break;
+        case USB_ERR_PARAM      : err = ERR_INVALID_ARG;
+        break;
+        case USB_ERR_FUNC       : err = ERR_UNSUPPORTED_OP;
+        break;
+        case USB_ERR_REDO       : err = ERR_NOT_INITIALIZED;
+        break;
+        case USB_ERR_ALLOC_FAIL : err = ERR_NO_RESOURCE;
+        break;
+        default: err = err;
+    }
+    return err;
+}
+
 /**
  * \brief Callback for USB to simply set a flag that data has been received.
  */
@@ -68,7 +92,14 @@ static bool usb_in_complete(const uint8_t ep, const enum usb_xfer_code rc, const
 
 	// only modify state if the transfer was on the BULK IN endpoint
 	if(CONF_USB_CDCD_ACM_DATA_BULKIN_EPADDR == ep) {
-		inbuf.waiting -= count;
+        if(count > inbuf.waiting) {
+            inbuf.waiting = 0;
+        }
+        else {
+            inbuf.waiting = inbuf.waiting - count;
+        }
+
+		//inbuf.waiting  = (count > inbuf.waiting ? 0 : (inbuf.waiting - count));
 		inbuf.lastCode = rc;
 	}
 
@@ -175,7 +206,13 @@ int32_t usb_write(void* outData, uint32_t BUFFER_SIZE)
 
 	// This check IS needed. cdcdf_acm_write() will drop data if bus is busy and does
 	// not appear to return an error message.
-	if(0 == inbuf.waiting && ctrlBuf.dtr) {
+	if(!ctrlBuf.dtr) {
+    	err = ERR_NOT_READY;
+	}
+    else if(inbuf.waiting) {
+        err = ERR_BUSY;
+    }
+    else {
 		volatile hal_atomic_t __atomic;
 		atomic_enter_critical(&__atomic);
 		inbuf.waiting  = BUFFER_SIZE;
@@ -183,17 +220,8 @@ int32_t usb_write(void* outData, uint32_t BUFFER_SIZE)
 
 		err = cdcdf_acm_write((uint8_t*)outData, BUFFER_SIZE);
 	}
-    else if(inbuf.waiting) {
-        err = ERR_BUSY;
-    }
-    else if(!ctrlBuf.dtr) {
-        err = ERR_NOT_READY;
-    }
-    else {
-        err = ERR_FAILURE;
-    }
 
-	return  err;
+	return  usb_errConverter(err);
 }
 
 int32_t usb_writeDirect(void* outData, uint32_t BUFFER_SIZE)
@@ -211,6 +239,13 @@ int32_t usb_writeDirect(void* outData, uint32_t BUFFER_SIZE)
         gpio_set_pin_level(LED_RED, false);
     }
     return err;
+}
+
+void usb_flushTx(void)
+{
+    // usb_d_ep_abort(_cdcdf_acm_funcd.func_ep_in[1]);     // out of scope :(
+    inbuf.waiting        = 0;
+
 }
 
 /************************ RECEIVING DATA ****************************************/
@@ -272,9 +307,10 @@ int32_t usb_read(void* receiveBuffer, uint32_t BUFFER_SIZE)
 	return i;
 }
 
-int32_t usb_flushRx(void)
+void usb_flushRx(void)
 {
-	outbuf.head = 0;
+	//usb_d_ep_abort(_cdcdf_acm_funcd.func_ep_out);     // out of scope :(
+    outbuf.head = 0;
 	outbuf.tail = 0;
 	return ERR_NONE;
 }

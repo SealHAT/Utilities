@@ -46,3 +46,48 @@ void set_lowPower_mode(void)
     /* Set Performance Level to PL0 as we run @12MHz */
     _set_performance_level(PM_PLCFG_PLSEL_PL0_Val);
 }
+
+const char* seal_strerror(int32_t errnumber)
+{
+    static const char* const errmsg[]= {"ERR_NONE",         // err code (0)
+                                        "ERR_INVALID_DATA", // err code (-1)
+                                        "ERR_NO_CHANGE",    // err code (-2)
+                                        "ERR_ABORTED",      // err code (-3)
+                                        "ERR_BUSY",         // err code (-4)
+                                        "ERR_SUSPEND",      // err code (-5)
+                                        "ERR_IO",           // err code (-6)
+                                        "ERR_REQ_FLUSHED",  // err code (-7)
+                                        "ERR_TIMEOUT",      // err code (-8)
+                                        "ERR_BAD_DATA",     // err code (-9)
+                                        "ERR_NOT_FOUND",    // err code (-10)
+                                        "ERR_UNSUPPORTED_DEV", // err code (-11)
+                                        "ERR_NO_MEMORY",    // err code (-12)
+                                        "ERR_INVALID_ARG",  // err code (-13)
+                                        "ERR_BAD_ADDRESS",  // err code (-14)
+                                        "ERR_BAD_FORMAT",   // err code (-15)
+                                        "ERR_BAD_FRQ",      // err code (-16)
+                                        "ERR_DENIED",       // err code (-17)
+                                        "ERR_ALREADY_INITIALIZED", // err code (-18)
+                                        "ERR_OVERFLOW",         // err code (-19)
+                                        "ERR_NOT_INITIALIZED",  // err code (-20)
+                                        "ERR_SAMPLERATE_UNAVAILABLE",   // err code (-21)
+                                        "ERR_RESOLUTION_UNAVAILABLE",   // err code (-22)
+                                        "ERR_BAUDRATE_UNAVAILABLE",     // err code (-23)
+                                        "ERR_PACKET_COLLISION",         // err code (-24)
+                                        "ERR_PROTOCOL",         // err code (-25)
+                                        "ERR_PIN_MUX_INVALID",  // err code (-26)
+                                        "ERR_UNSUPPORTED_OP",   // err code (-27)
+                                        "ERR_NO_RESOURCE",      // err code (-28)
+                                        "ERR_NOT_READY",        // err code (-29)
+                                        "ERR_FAILURE",          // err code (-30)
+                                        "ERR_WRONG_LENGTH",     // err code (-31)
+                                        0};
+
+    if(errnumber < 0 && errnumber >= -31) {
+        errnumber *= -1;
+    } else {
+        errnumber = 32;
+    }
+
+    return errmsg[errnumber];
+}

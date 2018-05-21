@@ -48,6 +48,8 @@ void i2c_unblock_bus(const uint8_t SDA, const uint8_t SCL);
  */
 void set_lowPower_mode(void);
 
+const char* seal_strerror(int32_t errnumber);
+
 #ifdef __cplusplus
 }
 #endif // __cplusplus
