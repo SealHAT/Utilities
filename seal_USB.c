@@ -32,9 +32,9 @@ typedef struct {
 	bool rts;					// Flag to indicate status of RTS - Request to Send
 } ctrlData_t;
 
-volatile static ctrlData_t ctrlBuf;				// CTRL endpoint buffer
-volatile static outData_t  outbuf;				// OUT endpoint buffer
-volatile static inData_t   inbuf;				// IN endpoint buffer
+static volatile ctrlData_t ctrlBuf;				// CTRL endpoint buffer
+static volatile outData_t  outbuf;				// OUT endpoint buffer
+static volatile inData_t   inbuf;				// IN endpoint buffer
 
 /**
  * \brief Callback for USB to simply set a flag that data has been received.
@@ -171,7 +171,7 @@ void usb_haltTraffic(void) {
 /************************ TRANSMITTING DATA *************************************/
 int32_t usb_write(void* outData, uint32_t BUFFER_SIZE)
 {
-	volatile static int32_t err;    // error return
+	int32_t err;    // error return
 
 	// This check IS needed. cdcdf_acm_write() will drop data if bus is busy and does
 	// not appear to return an error message.
@@ -195,7 +195,6 @@ int32_t usb_write(void* outData, uint32_t BUFFER_SIZE)
 
 	return  err;
 }
-
 
 /************************ RECEIVING DATA ****************************************/
 int32_t usb_available()

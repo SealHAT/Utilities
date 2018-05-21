@@ -69,13 +69,14 @@ void usb_haltTraffic(void);
  *
  * Send a buffer of data over USB. The data buffer can be of any length but will be split
  * into several packets by the underlying USB stack and sent chunks dictated by the USB endpoint
- * size.
+ * size. Write direct uses bypasses all the byte checking and just sets up a blocking read.
  *
  * @param outData [IN] buffer of data to output over USB
  * @param BUFFER_SIZE [IN] size of buffer to transfer
  * @returns 0 if successful, or negative if error (as listed in err_codes.h)
  */
 int32_t usb_write(void* outData, uint32_t BUFFER_SIZE);
+int32_t usb_writeDirect(void* outData, uint32_t BUFFER_SIZE);
 
 /**
  * @brief send a single character to the USB host
