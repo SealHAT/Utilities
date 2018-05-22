@@ -147,7 +147,7 @@ int32_t usb_start(void)
 	ctrlBuf.devState     = (USB_State_t)usbdc_get_state();
 
 	/* usb stack init */
-	err = usbdc_init(ctrlBuf.buff);
+	err = usbdc_init((uint8_t*)ctrlBuf.buff);
 
 	/* usbdc_register_funcion inside */
 	err = cdcdf_acm_init();
@@ -257,7 +257,7 @@ int32_t usb_available()
     if( (outbuf.tail - outbuf.head) == 0 && !outbuf.outInProgress ) {
         // request an OUT transfer. the head and tail will be adjusted in the callback function
         // this function will return negative if it fails for some reason
-        retval = cdcdf_acm_read(outbuf.buff, USB_BUFFER_SIZE);
+        retval = cdcdf_acm_read((uint8_t*)outbuf.buff, USB_BUFFER_SIZE);
     }
 
     // If read happened without error (or didn't happen at all) return the buffer size
