@@ -14,12 +14,27 @@ size_t printFloat(double number, uint8_t digits)
 
 size_t print(char* string)
 {
+    int32_t err;
+    int32_t len = strlen(string);
 
+    err = usb_write(string, len);
+    
+    return (ERR_NONE == err ? len : err);
 }
 
 size_t println(char* string)
 {
+    int32_t err;
+    int32_t len = strlen(string);
 
+    err = usb_write(string, len);
+    if(!err) {
+        delay_ms(5);
+        err = usb_write("\n", 1);
+        len++;
+    }
+
+    return (ERR_NONE == err ? len : err);
 }
 
 int ftostr(double number, uint8_t digits, char* buff, const int LEN)

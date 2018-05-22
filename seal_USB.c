@@ -312,5 +312,4 @@ void usb_flushRx(void)
 	//usb_d_ep_abort(_cdcdf_acm_funcd.func_ep_out);     // out of scope :(
     outbuf.head = 0;
 	outbuf.tail = 0;
-	return ERR_NONE;
 }
