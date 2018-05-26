@@ -228,12 +228,10 @@ int32_t usb_writeDirect(void* outData, uint32_t BUFFER_SIZE)
 {
     int32_t err;
 
-    vTaskSuspendAll();
     do {
         err = cdcdf_acm_write((uint8_t*)outData, BUFFER_SIZE);
     } while(err == USB_BUSY);
     delay_ms(((BUFFER_SIZE/1000)*10)+5);
-    xTaskResumeAll();
 
     if(err != ERR_NONE) {
         gpio_set_pin_level(LED_RED, false);

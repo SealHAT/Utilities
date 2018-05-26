@@ -8,7 +8,7 @@
 #ifndef SEAL_USB_H
 #define SEAL_USB_H
 
-#include "atmel_start.h"
+#include "driver_init.h"
 #include "cdcdf_acm.h"
 #include "cdcdf_acm_desc.h"
 

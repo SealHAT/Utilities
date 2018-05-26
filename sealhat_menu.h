@@ -4,7 +4,7 @@
 #ifndef SEALHAT_MENU_H_
 #define SEALHAT_MENU_H_
 
-#include "atmel_start.h"
+#include "driver_init.h"
 #include "seal_USB.h"
 #include <stdio.h>
 #include <stdlib.h>

@@ -9,7 +9,7 @@
 #ifndef SEALPRINT_H_
 #define SEALPRINT_H_
 
-#include <atmel_start.h>	/* where the IO functions live */
+#include "driver_init.h"	/* where the IO functions live */
 #include <stdio.h>
 #include <stdint.h>
 #include <stdio.h>
