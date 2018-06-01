@@ -18,9 +18,14 @@ void i2c_unblock_bus(const uint8_t SDA, const uint8_t SCL)
         gpio_set_pin_direction(SCL, GPIO_DIRECTION_OUT);
         gpio_set_pin_pull_mode(SCL, GPIO_PULL_OFF);
         gpio_set_pin_function(SCL, GPIO_PIN_FUNCTION_OFF);
-
-        for(i = 0; i <= 32; i++) {
+    
+        // Clock in data until there is no apparent data on the bus
+        count = 0;
+        while(count < 10) {
             gpio_toggle_pin_level(SCL);
+            if (gpio_get_pin_level(SDA)) {
+                count++;
+            }
         }
     }
 
